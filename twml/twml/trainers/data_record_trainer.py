@@ -214,13 +214,14 @@ class DataRecordTrainer(Trainer):  # pylint: disable=abstract-method
                          "data_dir, start_datetime, and end_datetime are None.")
 
     if maybe_save and files_list_path and (overwrite or not tf.io.gfile.exists(files_list_path)):
-      save_dict = {}
-      save_dict["files"] = files_list
-      save_dict["data_dir"] = data_dir
-      save_dict["start_datetime"] = start_datetime
-      save_dict["end_datetime"] = end_datetime
-      save_dict["datetime_format"] = datetime_format
-      save_dict["hour_resolution"] = hour_resolution
+      save_dict = {
+          "files": files_list,
+          "data_dir": data_dir,
+          "start_datetime": start_datetime,
+          "end_datetime": end_datetime,
+          "datetime_format": datetime_format,
+          "hour_resolution": hour_resolution,
+      }
       twml.util.write_file(files_list_path, save_dict, encode="json")
 
     return files_list
@@ -237,7 +238,9 @@ class DataRecordTrainer(Trainer):  # pylint: disable=abstract-method
 
     '''
     if not data_dir or not is_dal_path(data_dir):
-      logging.warn(f"Please consider specifying a dal:// dataset rather than passing a physical hdfs path.")
+      logging.warn(
+          "Please consider specifying a dal:// dataset rather than passing a physical hdfs path."
+      )
       return DataRecordTrainer.build_hdfs_files_list(
         files_list_path, data_dir,
         start_datetime, end_datetime, datetime_format,
@@ -441,7 +444,7 @@ class DataRecordTrainer(Trainer):  # pylint: disable=abstract-method
       else:
         # The user has not specified which direction is better for the stopping metric
         kwargs["is_metric_larger_the_better"] = None
-      logging.info("Using the tree algorithm with kwargs {}".format(kwargs))
+      logging.info(f"Using the tree algorithm with kwargs {kwargs}")
 
     feature_importances = compute_feature_importances(
       trainer=self,
